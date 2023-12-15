@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.params import Body
 import requests
 from enum import Enum
 
@@ -7,6 +6,13 @@ app = FastAPI()
 
 def retrieve_terms(data):
     endpoint= "https://hpo.jax.org/api/hpo/search"
+    headers = {'accept': 'application/json'}
+    response = requests.get(url = endpoint, params=data, headers=headers)
+    if response.status_code == 200:
+        result = response.json()
+        return result
+    else:
+        return response.text 
 
 
 @app.get("/")
@@ -28,4 +34,6 @@ async def retrieve_terms_using_the_phenotype(cat: Category, search_term: str, ma
         "category": cat,
         "max": max
     }
-    
+    response = retrieve_terms(data)
+    return response
+
